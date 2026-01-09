@@ -1,8 +1,51 @@
-<body>
-  <a-scene embedded arjs></a-scene>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 
+  <!-- A-Frame + AR.js (camera access) -->
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <!-- Camera feed -->
+  <a-scene
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false;"
+  ></a-scene>
+
+  <!-- CAMERA UI OVERLAY -->
   <div class="camera-ui">
-    <div class="reticle"></div>
-    <div class="label">Object detected</div>
+
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div class="icon">←</div>
+      <div class="icon">⤢</div>
+      <div class="icon">●</div>
+    </div>
+
+    <!-- Center frame -->
+    <div class="frame">
+      <div class="corner tl"></div>
+      <div class="corner tr"></div>
+      <div class="corner bl"></div>
+      <div class="corner br"></div>
+    </div>
+
+    <!-- Bottom label -->
+    <div class="label">
+      Schritt 1
+    </div>
+
+    <!-- Progress bar -->
+    <div class="progress">
+      <div class="progress-fill"></div>
+    </div>
+
   </div>
 </body>
+</html>
