@@ -12,12 +12,12 @@
 
   <style>
     :root{
-      --primary: #E7FE60;
-      --icon: #1A1A1A;
-      --footer-bg: rgba(50, 50, 50, 0.60);
-      --text-title: #E6E6E6;
-      --text-muted: #B3B3B3;
-      --progress-inactive: rgba(217, 217, 217, 0.20);
+      --primary:#E7FE60;
+      --icon:#1A1A1A;
+      --footer-bg: rgba(50,50,50,0.60);
+      --text-title:#E6E6E6;
+      --text-muted:#B3B3B3;
+      --progress-inactive: rgba(217,217,217,0.20);
 
       --safe-pad: clamp(12px, 2.6vw, 20px);
       --btn-h: 40px;
@@ -25,5 +25,331 @@
       --pill: 999px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background:#000; }
+    *{ box-sizing:border-box; margin:0; padding:0; }
+    html,body{ width:100%; height:100%; overflow:hidden; background:#000; }
+    body{ font-family:"DM Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+
+    /* CAMERA LAYER */
+    #cam{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      background:#000;
+      z-index:0;
+    }
+
+    /* UI LAYER (FORCE ON TOP) */
+    .ui{
+      position:fixed;
+      inset:0;
+      z-index:9999;
+      pointer-events:none;
+    }
+
+    /* START OVERLAY (for browsers needing a user gesture) */
+    .start{
+      position:fixed;
+      inset:0;
+      z-index:10000;
+      display:grid;
+      place-items:center;
+      background:rgba(0,0,0,0.35);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+    }
+    .start.hidden{ display:none; }
+    .start .card{
+      pointer-events:auto;
+      width:min(420px, 88vw);
+      background:rgba(0,0,0,0.70);
+      border:1px solid rgba(255,255,255,0.18);
+      border-radius:14px;
+      padding:14px 16px;
+      color:#fff;
+      text-align:center;
+    }
+    .start button{
+      margin-top:10px;
+      border:none;
+      border-radius:999px;
+      height:44px;
+      padding:0 18px;
+      background:var(--primary);
+      color:#121212;
+      font:700 16px "DM Sans", sans-serif;
+      cursor:pointer;
+    }
+    .hint{
+      margin-top:8px;
+      opacity:0.85;
+      font-size:13px;
+      line-height:1.25;
+    }
+
+    /* ON-SCREEN LOG (so we know why it’s black) */
+    .log{
+      position:fixed;
+      left:10px;
+      top:10px;
+      z-index:20000;
+      max-width:min(520px, 92vw);
+      background:rgba(0,0,0,0.55);
+      color:#fff;
+      font-size:12px;
+      padding:8px 10px;
+      border-radius:10px;
+      display:none;
+      white-space:pre-wrap;
+    }
+    .log.show{ display:block; }
+
+    /* ===== YOUR FIGMA UI ===== */
+
+    .topbar{
+      position:absolute;
+      top:var(--safe-pad);
+      left:var(--safe-pad);
+      right:var(--safe-pad);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .icon-btn{
+      width:var(--btn-h);
+      height:var(--btn-h);
+      border-radius:999px;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,0.80);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.25) inset;
+    }
+    .icon-btn.active{ background: var(--primary); }
+
+    .mi{
+      font-family:"Material Icons";
+      font-size:22px;
+      line-height:1;
+      color:var(--icon);
+    }
+
+    .right-icons{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .footer{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      background:var(--footer-bg);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      border-top-left-radius:var(--r8);
+      border-top-right-radius:var(--r8);
+      padding:10px var(--safe-pad) 12px;
+    }
+
+    .progress{
+      display:grid;
+      grid-template-columns:repeat(6, 1fr);
+      gap:2px;
+      height:4px;
+      margin-bottom:10px;
+    }
+    .seg{ border-radius:2px; background:var(--progress-inactive); }
+    .seg.active{ background:linear-gradient(90deg, var(--primary), var(--primary)); }
+
+    .footer-row{
+      display:grid;
+      grid-template-columns:1fr auto 1fr;
+      align-items:center;
+      gap:12px;
+      min-height:52px;
+    }
+
+    .step{
+      text-align:center;
+      color:var(--text-title);
+      font-weight:700;
+      font-size:clamp(18px, 4vw, 24px);
+      letter-spacing:0.2px;
+      user-select:none;
+    }
+
+    .btn{
+      height:var(--btn-h);
+      border-radius:var(--pill);
+      padding:0 clamp(16px, 4vw, 28px);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      white-space:nowrap;
+      user-select:none;
+    }
+
+    .btn-outline{
+      border:1px solid rgba(179,179,179,0.9);
+      color:var(--text-muted);
+      background:transparent;
+      font-weight:500;
+      font-size:16px;
+      opacity:0.95;
+    }
+
+    .btn-primary{
+      background:var(--primary);
+      color:rgba(26,26,26,0.95);
+      font-weight:500;
+      font-size:16px;
+      box-shadow:0 1px 0 rgba(255,255,255,0.25) inset;
+    }
+
+    .left-slot{ justify-self:start; }
+    .right-slot{ justify-self:end; }
+
+    /* DEBUG: show UI boundary so we KNOW overlay is rendering */
+    .ui-debug-dot{
+      position:fixed;
+      right:10px;
+      bottom:10px;
+      z-index:15000;
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background:var(--primary);
+      opacity:0.9;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Camera -->
+  <video id="cam" autoplay playsinline muted></video>
+
+  <!-- Start overlay -->
+  <div id="start" class="start">
+    <div class="card">
+      <div style="font-weight:700; font-size:16px;">Kamera starten</div>
+      <div class="hint">Wenn du ein schwarzes Bild siehst: tippe „Start“. Dann zeigt das Log unten den Grund.</div>
+      <button id="startBtn" type="button">Start</button>
+      <div class="hint" id="err"></div>
+    </div>
+  </div>
+
+  <!-- On-screen log -->
+  <div id="log" class="log"></div>
+
+  <!-- UI overlay -->
+  <div class="ui">
+    <div class="topbar">
+      <div class="icon-btn" aria-hidden="true"><span class="mi">arrow_back</span></div>
+
+      <div class="right-icons">
+        <div class="icon-btn active" aria-hidden="true"><span class="mi">crop_free</span></div>
+        <div class="icon-btn" aria-hidden="true"><span class="mi">play_circle</span></div>
+        <div class="icon-btn" aria-hidden="true"><span class="mi">help</span></div>
+        <div class="icon-btn" aria-hidden="true"><span class="mi">mic</span></div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="progress" aria-hidden="true">
+        <div class="seg active"></div><div class="seg"></div><div class="seg"></div>
+        <div class="seg"></div><div class="seg"></div><div class="seg"></div>
+      </div>
+
+      <div class="footer-row">
+        <div class="left-slot">
+          <div class="btn btn-outline" aria-hidden="true">
+            <span class="mi">arrow_back</span><span>Zurück</span>
+          </div>
+        </div>
+
+        <div class="step">Schritt 1</div>
+
+        <div class="right-slot">
+          <div class="btn btn-primary" aria-hidden="true">
+            <span>Weiter</span><span class="mi">arrow_forward</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- tiny dot = proof UI is showing -->
+    <div class="ui-debug-dot" aria-hidden="true"></div>
+  </div>
+
+  <script>
+    const video = document.getElementById('cam');
+    const startOverlay = document.getElementById('start');
+    const startBtn = document.getElementById('startBtn');
+    const errEl = document.getElementById('err');
+    const logEl = document.getElementById('log');
+
+    function log(msg){
+      logEl.textContent = msg;
+      logEl.classList.add('show');
+      console.log(msg);
+    }
+
+    async function tryGetUserMedia(constraints){
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      video.srcObject = stream;
+      await video.play();
+      return true;
+    }
+
+    async function startCamera(){
+      errEl.textContent = "";
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        const m = "getUserMedia nicht verfügbar (Browser/Permissions).";
+        errEl.textContent = m; log(m); return;
+      }
+
+      if (!window.isSecureContext) {
+        const m = "Kein HTTPS: Kamera funktioniert nur über https://";
+        errEl.textContent = m; log(m); return;
+      }
+
+      // 1) Try “environment” back camera (phones)
+      // 2) If that fails, try default camera
+      // 3) If that fails, try very simple constraint
+      const attempts = [
+        { audio:false, video:{ facingMode:{ ideal:"environment" } } },
+        { audio:false, video:true },
+        { audio:false, video:{ width:640, height:480 } }
+      ];
+
+      for (let i=0; i<attempts.length; i++){
+        try{
+          log("Trying constraints " + (i+1) + "…");
+          await tryGetUserMedia(attempts[i]);
+
+          startOverlay.classList.add('hidden');
+          log("✅ Camera stream running. videoWidth=" + video.videoWidth + " videoHeight=" + video.videoHeight);
+          return;
+        } catch(e){
+          log("❌ Attempt " + (i+1) + " failed: " + (e.name||"") + " " + (e.message||e));
+        }
+      }
+
+      errEl.textContent = "Kamera konnte nicht gestartet werden. Siehe Log oben.";
+    }
+
+    startBtn.addEventListener('click', startCamera);
+
+    // try auto-start; if blocked, user taps Start
+    window.addEventListener('load', startCamera);
+  </script>
+</body>
+</html>
