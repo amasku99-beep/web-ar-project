@@ -1,0 +1,4 @@
+#cam {
+  object-fit: cover;
+  transform-origin: center center;
+}
