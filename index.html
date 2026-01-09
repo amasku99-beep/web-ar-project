@@ -350,6 +350,28 @@
 
     // try auto-start; if blocked, user taps Start
     window.addEventListener('load', startCamera);
+
+  const video = document.getElementById("cam");
+
+    function updateOrientation() {
+      const landscape = window.innerWidth > window.innerHeight;
+
+      if (landscape) {
+        video.style.transform = "rotate(0deg)";
+      } else {
+        video.style.transform = "rotate(90deg) scale(1.1)";
+      }
+    }
+
+    window.addEventListener("resize", updateOrientation);
+    window.addEventListener("orientationchange", updateOrientation);
+
+    updateOrientation();
+
+    
   </script>
 </body>
+
 </html>
+
+
