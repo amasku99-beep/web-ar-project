@@ -1,197 +1,24 @@
 <!DOCTYPE html>
-<html lang="de">
+<html>
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;700&family=Material+Icons&display=swap" rel="stylesheet">
-
-  <!-- A-Frame + AR.js (camera feed behind UI) -->
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 
   <style>
-    :root{
-      --primary: #E7FE60;
-      --white: #FFFFFF;
-
-      --icon: #1A1A1A;
-      --footer-bg: rgba(50, 50, 50, 0.60);
-
-      --text-title: #E6E6E6;
-      --text-muted: #B3B3B3;
-
-      --progress-inactive: rgba(217, 217, 217, 0.20);
-
-      /* sizing */
-      --safe-pad: clamp(12px, 2.6vw, 20px);
-      --btn-h: 40px;
-      --radius-8: 8px;
-      --radius-pill: 999px;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; width: 100%; overflow: hidden; background: #000; }
-    body { font-family: "DM Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
-
-    /* Make AR.js canvas fill */
-    a-scene { position: fixed !important; inset: 0 !important; }
-
-    /* UI overlay layer */
-    .ui {
-      position: fixed;
-      inset: 0;
-      pointer-events: none; /* static: no interaction */
-    }
-
-    /* ---------- TOP BAR ---------- */
-    .topbar {
-      position: absolute;
-      top: var(--safe-pad);
-      left: var(--safe-pad);
-      right: var(--safe-pad);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .icon-btn {
-      width: var(--btn-h);
-      height: var(--btn-h);
-      border-radius: 999px;
-      display: grid;
-      place-items: center;
-      background: rgba(255,255,255,0.80);
-      /* glass-ish */
-      -webkit-backdrop-filter: blur(8px);
-      backdrop-filter: blur(8px);
-      box-shadow: 0 1px 0 rgba(255,255,255,0.25) inset;
-    }
-
-    .icon-btn .mi {
-      font-family: "Material Icons";
-      font-size: 22px;
-      line-height: 1;
-      color: var(--icon);
-    }
-
-    /* Active (crop_free) */
-    .icon-btn.active {
-      background: rgba(231, 254, 96, 1);
-    }
-
-    .right-icons {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    /* ---------- FOOTER ---------- */
-    .footer {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-
-      background: var(--footer-bg);
-      -webkit-backdrop-filter: blur(8px);
-      backdrop-filter: blur(8px);
-
-      border-top-left-radius: var(--radius-8);
-      border-top-right-radius: var(--radius-8);
-
-      padding: 10px var(--safe-pad) 12px;
-    }
-
-    .progress {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 2px;
-      height: 4px;
-      margin-bottom: 10px;
-    }
-
-    .seg {
-      border-radius: 2px;
-      background: var(--progress-inactive);
-    }
-
-    .seg.active {
-      background: linear-gradient(90deg, var(--primary), var(--primary));
-    }
-
-    .footer-row {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-      gap: 12px;
-      min-height: 52px;
-    }
-
-    .step {
-      text-align: center;
-      color: var(--text-title);
-      font-weight: 700;
-      font-size: clamp(18px, 4vw, 24px);
-      letter-spacing: 0.2px;
-      user-select: none;
-    }
-
-    .btn {
-      height: var(--btn-h);
-      border-radius: var(--radius-pill);
-      padding: 0 clamp(16px, 4vw, 28px);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      white-space: nowrap;
-      user-select: none;
-    }
-
-    .btn-outline {
-      border: 1px solid rgba(179,179,179,0.9);
-      color: var(--text-muted);
-      background: transparent;
-      font-weight: 500;
-      font-size: 16px;
-      opacity: 0.95; /* "disabled" look */
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: rgba(26,26,26,0.95);
-      font-weight: 500;
-      font-size: 16px;
-      box-shadow: 0 1px 0 rgba(255,255,255,0.25) inset;
-    }
-
-    .btn-primary .mi,
-    .btn-outline .mi {
-      font-family: "Material Icons";
-      font-size: 20px;
-      line-height: 1;
-    }
-
-    /* keep footer buttons from stretching too much on huge screens */
-    .left-slot { justify-self: start; }
-    .right-slot { justify-self: end; }
-
-    /* Optional: force landscape-feel spacing on portrait */
-    @media (orientation: portrait) {
-      .footer-row {
-        grid-template-columns: 1fr auto 1fr;
-      }
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
     }
   </style>
 </head>
 
-<body style="margin:0; overflow:hidden;">
+<body>
 
+  <!-- CAMERA -->
   <a-scene
     embedded
     vr-mode-ui="enabled: false"
@@ -199,6 +26,8 @@
   >
     <a-camera></a-camera>
   </a-scene>
+
+  <!-- YOUR OVERLAY UI CAN GO HERE -->
 
 </body>
 </html>
