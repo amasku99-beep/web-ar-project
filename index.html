@@ -190,65 +190,15 @@
   </style>
 </head>
 
-<body>
-  <!-- Camera feed -->
-  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;"></a-scene>
+<body style="margin:0; overflow:hidden;">
 
-  <!-- UI overlay -->
-  <div class="ui">
+  <a-scene
+    embedded
+    vr-mode-ui="enabled: false"
+    arjs="sourceType: webcam; debugUIEnabled: false;"
+  >
+    <a-camera></a-camera>
+  </a-scene>
 
-    <!-- Top bar -->
-    <div class="topbar">
-      <div class="icon-btn" aria-hidden="true">
-        <span class="mi">arrow_back</span>
-      </div>
-
-      <div class="right-icons">
-        <div class="icon-btn active" aria-hidden="true" title="crop_free">
-          <span class="mi">crop_free</span>
-        </div>
-        <div class="icon-btn" aria-hidden="true" title="play_circle">
-          <span class="mi">play_circle</span>
-        </div>
-        <div class="icon-btn" aria-hidden="true" title="help">
-          <span class="mi">help</span>
-        </div>
-        <div class="icon-btn" aria-hidden="true" title="mic">
-          <span class="mi">mic</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Footer -->
-    <div class="footer">
-      <div class="progress" aria-hidden="true">
-        <div class="seg active"></div>
-        <div class="seg"></div>
-        <div class="seg"></div>
-        <div class="seg"></div>
-        <div class="seg"></div>
-        <div class="seg"></div>
-      </div>
-
-      <div class="footer-row">
-        <div class="left-slot">
-          <div class="btn btn-outline" aria-hidden="true">
-            <span class="mi">arrow_back</span>
-            <span>Zurück</span>
-          </div>
-        </div>
-
-        <div class="step">Schritt 1</div>
-
-        <div class="right-slot">
-          <div class="btn btn-primary" aria-hidden="true">
-            <span>Weiter</span>
-            <span class="mi">arrow_forward</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
 </body>
 </html>
